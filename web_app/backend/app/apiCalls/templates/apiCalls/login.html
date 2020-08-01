@@ -1,0 +1,65 @@
+{% extends 'apiCalls/base_before_login.html' %}
+{% load static %}
+{% block content %}
+
+<!-- <div style="background-image: url({% static 'img/background2.jpg' %});"> -->
+
+    <div class="welcome">
+        <h1>Welcome to the Cotton Portal</h1>
+        {% if errors %}
+            <h2>Errors : {{errors}}</h2>            <!--had to show this as a dissimissable warning-->
+        {% endif %}
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+            </div>
+
+            <div class="col-sm-4">
+                <div class="logincontainer">
+                    <form method = "POST" action = "/login/">
+                        <div class="heading">
+                            <h3>Sign in</h3>
+                        </div>
+                       
+                            <div class="wrap-input" data-validate="Please enter username">
+                                <input class="input" name = "username" type="text" name="username" placeholder="Username" required="true"> 
+                            </div>
+
+                            <div class="wrap-input" data-validate="Please enter a password">
+                                <input class="input" type = "password" name = "password" type="text" placeholder="Password">                           
+                            </div>
+
+                            <div class="login-btn">
+                                <button type = "submit" class="login-form-btn">
+                                    Sign in 
+                                </button>
+                            </div>
+
+                            <div class="login-btn">
+                                <button type = "submit" class="login-form-btn">
+                                    Get OTP 
+                                </button>
+                            </div>
+
+                        <div class="flex-col-c">
+                            <span class="txt1">
+                                Don’t have an account?
+                            </span>
+    
+                            <a href="/signup" class="txt2">
+                                Sign up now
+                            </a>
+                        </div>
+                    </form>                
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                
+            </div>
+
+        </div>
+    </div>
+<!-- </div> -->
+{% endblock %}

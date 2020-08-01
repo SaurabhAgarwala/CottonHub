@@ -1,0 +1,90 @@
+body{
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: rgba(182, 201, 182, 0.4);
+    background-blend-mode: lighten;
+}
+.welcome h1{
+    text-align: center;
+    font-weight: bolder;
+    color: azure;
+}
+.logincontainer{
+    background-color:  rgb(246, 248, 246);  
+    border-radius: 20px 20px 20px 20px; 
+    text-align: center;
+    margin: 10px;
+    
+}
+
+.heading h3{
+    background-color: #b7ce63; 
+    border-radius: 20px 20px 0px 0px;  
+    font-weight: bold;
+    color: rgba(250, 249, 249, 0.986);
+    padding: 30px;
+}
+
+.wrap-input{
+    background-color: rgb(246, 248, 246);
+    padding: 20px;
+}
+
+.input{
+    border-radius: 20px;
+    border: none;
+    background-color: rgb(234, 241, 233);
+    padding: 10px;
+    width: 100%;
+    font-weight: bold;
+}
+
+.wrap-input:focus{
+
+    border-style: none;
+}
+.login-form-btn{
+    border-radius: 20px;
+    border: none;
+    background-color:#b7ce63 ;
+    padding: 10px;
+    width: 70%;
+    margin: 10px;
+    font-weight: bold;
+}
+.login-form-btn:hover{
+    background-color:rgb(154, 223, 163) ;
+}
+
+.login-btn{
+    background-color: rgb(246, 247, 248);
+    color: rgba(250, 249, 249, 0.986);
+}
+
+.flex-col-c{
+    background-color:rgb(246, 247, 248) ;  
+    padding: 20px;
+    border-radius: 0px 0px 20px 20px; 
+}
+
+.txt1{
+    font-weight: bold;
+}
+
+.txt2{
+    font-weight: bold;
+}
+
+.navbar{
+    background-color: #463f3a;
+    
+    
+}
+.nav-link{
+    color: azure;
+    font-weight: bolder;
+}
+.nav-link:hover{
+    color: rgb(194, 223, 223);
+    
+}
