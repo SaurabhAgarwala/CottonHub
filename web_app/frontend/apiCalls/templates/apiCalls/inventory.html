@@ -1,0 +1,29 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+
+<div id = "inventoryDetails">
+
+</div>
+
+
+<script>
+    window.onload = () => {
+
+        fetch("http://localhost:8000/getinventory/",{
+            method: "GET"
+        })
+        .then((response)=> {
+            return response.json()
+        })
+        .then((response)=>{
+            console.log(response)
+            inventoryDetails = document.getElementById("inventoryDetails")
+            for(var i=0; i< response.length; i++){
+                inventoryDetails.innerHTML += response[i].product.cotton_type.name +"  "+ response[i].quantity + "  " + response[i].selling_price + "<br>"
+            }
+        })
+    }
+</script>
+
+{% endblock %}
