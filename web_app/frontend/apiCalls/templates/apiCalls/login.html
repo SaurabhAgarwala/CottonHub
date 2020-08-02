@@ -1,0 +1,49 @@
+{% extends 'apiCalls/base_before_login.html' %}
+{% load static %}
+{% block content %}
+<!-- <div style="background-image: url({% static 'img/background2.jpg' %});"> -->
+
+    <div class="welcome">
+
+        {% if errors %}
+        <div class="alert alert-warning">
+            <strong>Warning</strong>  {{errors}}
+          </div>
+            <!--<h2>Errors :</h2>            --had to show this as a dissimissable warning-->
+        {% endif %}
+    </div>
+    <div class="container-fluid">
+        <div class="row no-gutter">
+            <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+            <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container"> 
+                <div class="row">
+                    <div class="col-md-9 col-lg-8 mx-auto">
+                    <h3 class="login-heading mb-4">Welcome!</h3>
+                    <form method = "POST" action = "/login/">
+                        <div class="form-label-group" data-validate="Please enter username">
+                        <input type="text" id="username" name="username" class="form-control" placeholder="username" required autofocus>
+                        <label for="username">Phone</label>
+                        </div>
+
+                        <div class="form-label-group" data-validate="Please enter a password">
+                        <input type="password" id="inputPassword" class="form-control" name = "password" placeholder="Password">
+                        <label for="inputPassword">Password / OTP</label>
+                        </div>
+                        <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Sign in</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-otp-login text-uppercase font-weight-bold mb-2" type="submit">Get OTP</button>
+                        
+                        <div class="text-center">
+                        <a class="small" href="/signup">Sign Up instead?</a></div>
+                    </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
