@@ -174,3 +174,6 @@ vignettes/*.pdf
 
 # pkgdown site
 docs/
+
+# Others
+.vscode/settings.json

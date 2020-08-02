@@ -103,3 +103,115 @@ def verifyOTP(request):
     else:
         data = {"message": "Incorrect OTP"}
         return Response(data=data, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+
+class CottonType(models.Model):
+    name = models.CharField(max_length=20, blank=False)
+    description = models.TextField(blank=True, null=False)
+
+    def __str__(self):
+        return self.name
+
+
+class Market(models.Model):
+    name = models.CharField(max_length=20, blank=False)
+    state = models.CharField(max_length=20, blank=False)
+    district = models.CharField(max_length=30, blank=False)
+
+    def __str__(self):
+        return self.name
+
+
+class Product(models.Model):
+    user = models.ForeignKey(User, default=1, blank=False, on_delete=models.CASCADE)
+    cotton_type = models.ForeignKey(CottonType, blank=False, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.first_name + "  " + self.cotton_type.name
+
+
+class Inventory(models.Model):
+    product = models.ForeignKey(Product, blank=False, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(blank=False)
+    selling_price = models.PositiveIntegerField(blank=False)
+    msp = models.PositiveIntegerField(blank=False)
+
+    def __str__(self):
+        return self.product.cotton_type.name + "  " + str(self.quantity)
+
+
+class Order(models.Model):
+    user = models.ForeignKey(User, default=1, blank=False, on_delete=models.CASCADE)
+    name = models.CharField(max_length=40, blank=False)
+    mobile = models.CharField(max_length=15, blank=False)
+    shipping_address = models.TextField(blank=False)
+    purchased = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name + "  " + self.mobile
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, blank=False, on_delete=models.CASCADE)
+    inventory = models.ForeignKey(Inventory, blank=False, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(blank=False)
+
+    def __str__(self):
+        return self.order.name + "  " + self.inventory.product.cotton_type.name
+
+
+@permission_classes([IsAuthenticated])
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = models.Order.objects.all()
+    serializer_class = serializers.OrderSerializer
+
+
+@permission_classes([IsAuthenticated])
+class OrderItemViewSet(viewsets.ModelViewSet):
+    queryset = models.OrderItem.objects.all()
+    serializer_class = serializers.OrderItemSerializer
+
+    @list_route(methods=["get"])
+    def me(self, request, **kwargs):
+        user = request.user
+        print(user)
+        order = Order.objects.filter(user=user)
+        print(order)
+        order_items = OrderItem.objects.filter(order__in=order)
+        print(order_items)
+        order_items_serializer = serializers.OrderItemSerializer(
+            order_items, many=True
+        ).data
+        return Response(order_items_serializer)
+
+
+class CottonTypeViewSet(viewsets.ModelViewSet):
+    queryset = models.CottonType.objects.all()
+    serializer_class = serializers.CottonTypeSerializer
+
+
+class MarketViewSet(viewsets.ModelViewSet):
+    queryset = models.Market.objects.all()
+    serializer_class = serializers.MarketSerializer
+
+
+@permission_classes([IsAuthenticated])
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = models.Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+
+
+@permission_classes([IsAuthenticated])
+class InventoryViewSet(viewsets.ModelViewSet):
+    queryset = models.Inventory.objects.all()
+    serializer_class = serializers.InventorySerializer
+
+    @list_route(methods=["get"])
+    def me(self, request, **kwargs):
+        user = request.user
+        product = Product.objects.filter(user=user)
+        inventory = Inventory.objects.filter(product__in=product)
+        inventory_serializer = serializers.InventorySerializer(
+            inventory, many=True
+        ).data
+        return Response(inventory_serializer)
