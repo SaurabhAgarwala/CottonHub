@@ -1,0 +1,90 @@
+{% extends 'apiCalls/base_before_login.html' %}
+{% load static %}
+{% block content %}
+
+<!-- <div style="background-image: url({% static 'img/background2.jpg' %});"> -->
+
+    <div class="welcome">
+    </div>
+    <div class="container-fluid">
+        <div class="row no-gutter">
+            <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+            <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container">
+                <div class="row">
+                    <div class="col-md-9 col-lg-8 mx-auto">
+                    <h3 class="login-heading mb-4">Sign In</h3>
+                    <form method = "POST" action = "/otplogin/">
+                        <div class="form-label-group" data-validate="Please enter username">
+                        <input type="text" value = "{{username}}" id="username" name="username" class="form-control" placeholder="Phone" required readonly autofocus>
+                        <label for="username">Phone</label>
+                        </div>
+
+                        <div class="form-label-group" data-validate="Please enter a password">
+                        <input type="text" id="otp" class="form-control" name = "otp" placeholder="OTP" required>
+                        <label for="otp">OTP</label>
+                        </div>
+                        <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Sign in</button>
+                        
+                        <div class="text-center">
+                        <a class="small" href="/signup">Sign Up instead?</a></div>
+                        <div class="text-center">
+                            <a class="small" href="/login">Log in with password</a></div>
+                    </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+<!--    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-4">
+            </div>
+
+            <div class="col-sm-4">
+                <div class="logincontainer">
+                    <form method = "POST" action = "/otplogin/">
+                        <div class="heading">
+                            <h3>Sign in</h3>
+                        </div>
+                       
+                            <div class="wrap-input" data-validate="Please enter username">
+                                <input class="input" value = "{{username}}" type="text" name="username" 
+                                placeholder="Username" required="true" readonly>
+                            </div>
+
+                            <div class="wrap-input" data-validate="Please enter a password">
+                                <input class="input" type = "text" name="otp" placeholder="OTP" required="true">                           
+                            </div>
+
+                            <div class="login-btn">
+                                <button type = "submit" class="login-form-btn">
+                                    Sign in 
+                                </button>
+                            </div>
+
+                        <div class="flex-col-c">
+                            <span class="txt1">
+                                Don’t have an account?
+                            </span>
+    
+                            <a href="/signup" class="txt2">
+                                Sign up now
+                            </a>
+                        </div>
+                    </form>                
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                
+            </div>
+
+        </div>
+    </div>
+-->
+{% endblock %}

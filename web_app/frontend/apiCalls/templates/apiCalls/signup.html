@@ -1,0 +1,78 @@
+{% extends 'apiCalls/base_before_login.html' %}
+{% load static %}
+{% block content %}
+    <div class="welcome">
+        <div>                        <!-- keep this in dissimissable warning -->
+            {% if errors %}
+                {% for key, value in errors.items %}
+                    <div class="alert alert-danger">
+                        <strong>Warning! </strong> {{key}} - {{value}}
+                    </div>
+                    <!--<h3>{{key}} - {{value}}</h3>-->
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row no-gutter">
+            <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+            <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container">
+                <div class="row">
+                    <div class="col-md-9 col-lg-8 mx-auto">
+                    <h3 class="login-heading mb-4">Sign Up</h3>
+                    <form method = "POST" action = "/signup/">
+                        <div class="form-label-group" data-validate="Please enter firstname">
+                        <input type="text" id="firstname" name="firstname" class="form-control" placeholder="firstname" required autofocus>
+                        <label for="firstname">First Name</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter lastname">
+                        <input type="text" id="lastname" name="lastname" class="form-control" placeholder="lastname" required autofocus>
+                        <label for="lastname">Last Name</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter username">
+                        <input type="number" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+                        <label for="username">Phone</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter email">
+                        <input type="email" id="email" name="email" class="form-control" placeholder="email" required autofocus>
+                        <label for="email">Email</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter gst">
+                        <input type="text" id="gst" name="gst" class="form-control" placeholder="gst" autofocus>
+                        <label for="gst">GST</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter aadhar">
+                        <input type="text" id="aadhar" name="aadhar" class="form-control" placeholder="aadhar" required autofocus>
+                        <label for="aadhar">Aadhar</label>
+                        </div>
+                        <div class="form-label-group" data-validate="Please enter pan">
+                        <input type="text" id="pan" name="pan" class="form-control" placeholder="pan" required autofocus>
+                        <label for="pan">PAN</label>
+                        </div>
+
+                        <div class="form-label-group" data-validate="Please enter a password">
+                        <input type="password" id="password" class="form-control" name = "password" placeholder="Password" required>
+                        <label for="password">Password</label>
+                        </div>
+
+                        <div class="form-label-group" data-validate="Please enter a password">
+                            <input type="password" id="re_password" class="form-control" name = "re_password" placeholder="re_password" required>
+                            <label for="re_password">Confirm Password</label>
+                            </div>
+                        
+                        <button class="btn btn-lg btn-primary btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Sign Up</button>
+                        <button class="btn btn-lg btn-primary btn-block btn-otp-login text-uppercase font-weight-bold mb-2" type="submit">Get OTP</button>
+                        
+                        <div class="text-center">
+                        <a class="small" href="/login">Log In instead?</a></div>
+                    </form>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

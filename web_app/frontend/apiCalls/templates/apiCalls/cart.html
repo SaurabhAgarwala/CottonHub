@@ -1,0 +1,31 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+
+<div id = "productsInCart">
+
+</div>
+
+
+<script>
+    window.onload = () => {
+
+        fetch("http://localhost:8000/getorders/",{
+            method: "GET"
+        })
+        .then((response)=> {
+            return response.json()
+        })
+        .then((response)=>{
+            console.log(response)
+            productsInCart = document.getElementById("productsInCart")
+            
+            for(var i = 0; i<response.length; i++){
+                
+            }
+            
+        })
+    }
+</script>
+
+{% endblock %}
