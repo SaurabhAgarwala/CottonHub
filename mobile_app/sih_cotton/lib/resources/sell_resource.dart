@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sih_cotton/models/cotton_type.dart';
 import 'package:sih_cotton/models/inventory.dart';
 import 'package:sih_cotton/models/market_type.dart';
+import 'package:sih_cotton/models/stat.dart';
 import 'package:sih_cotton/singleton.dart';
 
 import 'file:///F:/sih_cotton/lib/values/values.dart';
@@ -16,18 +18,19 @@ class SellResource extends ChangeNotifier {
   static const String URL_COTTON_TYPES = '/cottontype';
   static const String URL_COTTON_MARKET = '/market';
   static const String URL_MY_INVENTORY = '/inventory/me/';
+  static const String URL_SPECIFIC = '/analysis/specific';
 
   String _token;
   List<CottonType> _cottonTypes = [];
   List<MarketType> _marketTypes = [];
   List<Inventory> _inventory = [];
+  List<Stat> _stats = [];
   List<Inventory> _myInventory = [];
 
   List<CottonType> get cottonTypes => _cottonTypes;
-
   List<MarketType> get marketTypes => _marketTypes;
-
   List<Inventory> get myInventory => _myInventory;
+  List<Stat> get stats => _stats;
   List<Inventory> get inventory => _inventory;
 
   StreamController<String> _notification = StreamController.broadcast();
@@ -179,6 +182,35 @@ class SellResource extends ChangeNotifier {
       setState(SellStatus.NotSold);
     }
     setState(SellStatus.NotSold);
+  }
+
+  Future getStats({int cottonType, int marketType}) async {
+    print('getStats');
+    HashMap<String, String> params = HashMap();
+    if (cottonType != null)
+      params.putIfAbsent('cottontype', () => cottonType.toString());
+    if (marketType != null)
+      params.putIfAbsent('market', () => marketType.toString());
+    try {
+      Uri uri = Uri.http(Values.DOMAIN, URL_SPECIFIC, params);
+      Response response = await Singleton.instance.dio.getUri(uri,
+          options: Options(
+            responseType: ResponseType.json,
+          ));
+      List<dynamic> list = response.data;
+      print("getStats fetched");
+      _stats.clear();
+      print("${list.length} stats available");
+      list.forEach((element) {
+        print(element);
+        var inventoryItem = Stat.fromType(element);
+        _stats.add(inventoryItem);
+      });
+      return;
+    } catch (e) {
+      print('Error : $e');
+    }
+    return;
   }
 
   void setState(SellStatus status) {

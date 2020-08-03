@@ -24,7 +24,8 @@ class BuyResource extends ChangeNotifier {
   static const String URL_INVENTORY = '/inventory';
   static const String URL_COTTON_TYPES = '/cottontype';
   static const String URL_COTTON_MARKET = '/market';
-  static const String URL_BUY = '/buy';
+  static const String URL_BUY = '/addtocart/';
+  static const String URL_PLACE_ORCE = '/placeorder/';
   static const String URL_MY_ORDERS = '/orderitem/me/';
 
   String _token;
@@ -224,7 +225,7 @@ class BuyResource extends ChangeNotifier {
     return;
   }
 
-  Future buy(
+  Future<dynamic> addToCart(
       {int userId,
       int cottonType,
       int market,
@@ -252,7 +253,40 @@ class BuyResource extends ChangeNotifier {
       Map<String, dynamic> map = response.data;
       if (map.containsKey('status')) {
         if (map['status'] == true) {
-          _notification.add('Order placed for $quantity units of cotton');
+          getInventory();
+          return map['order_id'];
+        } else
+          _notification.add('Could not place the order');
+      }
+    } catch (e) {
+      print('Error : $e');
+      if (e is DioError) {
+        if (e.response != null && e.response.data != null) {
+          Map<String, dynamic> map = e.response.data;
+          if (map.containsKey('non_field_errors')) {
+            notification.sink.add(map.entries
+                .firstWhere((element) => element.key == 'non_field_errors')
+                .value
+                .first
+                .toString());
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  Future placeOrder({int id}) async {
+    try {
+      Uri uri = Uri.http(Values.DOMAIN, URL_PLACE_ORCE + '$id/');
+      Response response = await Singleton.instance.dio.putUri(uri,
+          options: Options(
+            responseType: ResponseType.json,
+          ));
+      Map<String, dynamic> map = response.data;
+      if (map.containsKey('status')) {
+        if (map['status'] == true) {
+          _notification.add('Order placed.');
           getInventory();
         } else
           _notification.add('Could not place the order');

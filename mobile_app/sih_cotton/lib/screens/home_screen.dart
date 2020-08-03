@@ -21,6 +21,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 2;
+
+  void refresh() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String> options = [
@@ -33,11 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
     List<Widget> widgets = [
       ChangeNotifierProvider(create: (_) => BuyResource(), child: BuyScreen()),
       ChangeNotifierProvider(
-          create: (_) => SellResource(), child: SellScreen()),
+          create: (_) => SellResource(),
+          child: SellScreen()),
       DashboardScreen(),
       ChangeNotifierProvider(
           create: (_) => AnalysisResource(), child: AnalysisScreen()),
-      SettingsScreen(),
+      SettingsScreen(refresh),
     ];
     return SafeArea(
       child: Scaffold(

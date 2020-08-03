@@ -17,8 +17,8 @@ class Singleton {
     sharedPreferences = SharedPreferences.getInstance();
     dio.options = new BaseOptions(
       responseType: ResponseType.json,
-      connectTimeout: 10000,
-      receiveTimeout: 100000,
+      connectTimeout: 1000000,
+      receiveTimeout: 1000000,
       headers: {
         HttpHeaders.userAgentHeader: "dio",
       },
