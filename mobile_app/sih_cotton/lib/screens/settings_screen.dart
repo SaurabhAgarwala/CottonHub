@@ -1,21 +1,30 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sih_cotton/resources/analysis_resource.dart';
 import 'package:sih_cotton/resources/auth_resource.dart';
 import 'package:sih_cotton/screens/profile_screen.dart';
+import 'package:sih_cotton/singleton.dart';
 import 'package:sih_cotton/values/values.dart';
+import 'package:sih_cotton/widgets/faq_widget.dart';
 import 'package:sih_cotton/widgets/language.dart';
-import 'package:sih_cotton/widgets/prediction_bar_chart.dart';
-import 'package:sih_cotton/widgets/prediction_chart.dart';
 import 'package:sih_cotton/widgets/text_translator.dart';
 
 class SettingsScreen extends StatefulWidget {
+  final Function refresh;
+
+  SettingsScreen(this.refresh);
   @override
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  static const String URL_FEEDBACK = '/feedback/';
+  static const String URL_COMPLAINT = '/complaint/';
+  String subject;
+  String body;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,7 +40,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Column(
       children: [
         ListTile(
-          title: Text('My Profile'),
+          title: TextTranslator('My Profile'),
           onTap: () {
             buildPopup(
               ProfileScreen(),
@@ -40,25 +49,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
         ListTile(
-          title: Text('FAQ'),
-          onTap: () {
-            buildPopup(
-              Container(),
-              'FAQ',
-            );
-          },
-        ),
-        ListTile(
-          title: Text('Complaints/Feedback'),
-          onTap: () {
-            buildPopup(
-              Container(),
-              'Complaints/Feedback',
-            );
-          },
-        ),
-        ListTile(
-          title: Text('Change Language'),
+          title: TextTranslator('Change Language'),
           onTap: () {
             buildPopup(
               LanguageWidget(),
@@ -67,7 +58,92 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
         ListTile(
-          title: Text('Logout'),
+          title: TextTranslator('FAQ'),
+          onTap: () {
+            buildPopup(
+              FaqWidget(),
+              'FAQ',
+            );
+          },
+        ),
+        ListTile(
+          title: TextTranslator('Register Complaint'),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    title: TextTranslator('Register complaint'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(hintText: 'Subject'),
+                          onChanged: (value) => subject = value,
+                        ),
+                        TextField(
+                          decoration: InputDecoration(hintText: 'Body'),
+                          onChanged: (value) => body = value,
+                        )
+                      ],
+                    ),
+                    actions: [
+                      FlatButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: TextTranslator('Cancel')),
+                      FlatButton(
+                          onPressed: () {
+                            postComplaint(subject, body);
+                            Navigator.pop(context);
+                          },
+                          child: TextTranslator('Register'))
+                    ],
+                  );
+                });
+          },
+        ),
+        ListTile(
+          title: TextTranslator('Give Feedback'),
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return AlertDialog(
+                    title: TextTranslator('Feedback'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextField(
+                          decoration: InputDecoration(hintText: 'Subject'),
+                          onChanged: (value) => subject = value,
+                        ),
+                        TextField(
+                          decoration: InputDecoration(hintText: 'Body'),
+                          onChanged: (value) => body = value,
+                        )
+                      ],
+                    ),
+                    actions: [
+                      FlatButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: TextTranslator('Cancel')),
+                      FlatButton(
+                          onPressed: () {
+                            postFeedback(subject, body);
+                            Navigator.pop(context);
+                          },
+                          child: TextTranslator('Post'))
+                    ],
+                  );
+                });
+          },
+        ),
+        ListTile(
+          title: TextTranslator('Logout'),
           onTap: () {
             showDialog(
                 context: context,
@@ -79,13 +155,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text('No')),
+                          child: TextTranslator('No')),
                       FlatButton(
-                          onPressed: () {
-                            Provider.of<AuthResource>(context).signOut();
+                          onPressed: () async {
+                            await Provider.of<AuthResource>(context,
+                                    listen: false)
+                                .signOut();
                             Navigator.pop(context);
                           },
-                          child: Text('Yes'))
+                          child: TextTranslator('Yes'))
                     ],
                   );
                 });
@@ -95,17 +173,69 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  void buildPopup(Widget widget, String title) {
-    Navigator.of(context).push(new MaterialPageRoute<Null>(
+  void buildPopup(Widget customWidget, String title) async {
+    await Navigator.of(context).push(new MaterialPageRoute<Null>(
         builder: (BuildContext context) {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
-              title: Text(title),
+              title: TextTranslator(title),
             ),
-            body: widget,
+            body: customWidget,
           );
         },
         fullscreenDialog: true));
+    widget.refresh();
+    setState(() {});
+  }
+
+  Future postComplaint(String subject, String body) async {
+    print('postComplaint');
+    try {
+      Uri uri = Uri.http(Values.DOMAIN, URL_COMPLAINT);
+      Response response = await Singleton.instance.dio.postUri(uri,
+          data: {'subject': subject, 'body': body},
+          options: Options(
+            responseType: ResponseType.json,
+          ));
+      Map<String, dynamic> map = response.data;
+      if (map.containsKey('id')) {
+        print("Post comlpaint succesful");
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: TextTranslator('Complaint registered.')));
+      }
+    } catch (e) {
+      print('Error : $e');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: TextTranslator('Could not post complaint')));
+    }
+    this.subject = null;
+    this.body = null;
+    return;
+  }
+
+  Future postFeedback(String subject, String body) async {
+    print('postFeedback');
+    try {
+      Uri uri = Uri.http(Values.DOMAIN, URL_FEEDBACK);
+      Response response = await Singleton.instance.dio.postUri(uri,
+          data: {'subject': subject, 'body': body},
+          options: Options(
+            responseType: ResponseType.json,
+          ));
+      Map<String, dynamic> map = response.data;
+      if (map.containsKey('id')) {
+        print("Post feedback succesful");
+        Scaffold.of(context).showSnackBar(
+            SnackBar(content: TextTranslator('Feedback received.')));
+      }
+    } catch (e) {
+      print('Error : $e');
+      Scaffold.of(context).showSnackBar(
+          SnackBar(content: TextTranslator('Could not post feedback')));
+    }
+    this.subject = null;
+    this.body = null;
+    return;
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
@@ -25,6 +26,8 @@ class AnalysisResource extends ChangeNotifier {
   static const String URL_ANALYSIS = '/analysis';
   static const String URL_COTTON_TYPES = '/cottontype';
   static const String URL_COTTON_MARKET = '/market';
+  static const String URL_SPECIFIC = '/analysis/specific';
+  static const String URL_HEATMAP = '/getheatmap';
 
   List<Stat> _stats = [];
   List<CottonType> _cottonTypes = [];
@@ -41,12 +44,16 @@ class AnalysisResource extends ChangeNotifier {
   StreamController<String> _notification = StreamController.broadcast();
   StreamController<String> get notification => _notification;
 
-  Future getStats() async {
+  Future getStats({int cottonType, int marketType}) async {
     print('getStats');
-    if (stats.length > 0) return;
     setState(AnalysisStatus.Loading);
+    HashMap<String, String> params = HashMap();
+    if (cottonType != null)
+      params.putIfAbsent('cottontype', () => cottonType.toString());
+    if (marketType != null)
+      params.putIfAbsent('market', () => marketType.toString());
     try {
-      Uri uri = Uri.http(Values.DOMAIN, URL_ANALYSIS);
+      Uri uri = Uri.http(Values.DOMAIN, URL_SPECIFIC, params);
       Response response = await Singleton.instance.dio.getUri(uri,
           options: Options(
             responseType: ResponseType.json,
@@ -132,6 +139,29 @@ class AnalysisResource extends ChangeNotifier {
       print('Error : $e');
     }
     return;
+  }
+
+  Future<String> getImage({String state, String year}) async {
+    print('getImage');
+    try {
+      if (state == null && year == null) {
+        return '';
+      }
+      Uri uri = Uri.http(Values.DOMAIN, URL_HEATMAP, {
+        'state': state,
+        'year': year,
+      });
+      Response response = await Singleton.instance.dio.getUri(uri,
+          options: Options(
+            responseType: ResponseType.json,
+          ));
+      Map<String, dynamic> map = response.data;
+      print("Image fetched");
+      if (map.containsKey('image')) return map['image'];
+    } catch (e) {
+      print('Error : $e');
+    }
+    return '';
   }
 
   void setState(AnalysisStatus status) {

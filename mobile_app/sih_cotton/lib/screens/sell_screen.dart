@@ -22,6 +22,7 @@ class _SellScreenState extends State<SellScreen> {
   int _sellingPrice;
   CottonType _cottonType;
   MarketType _marketType;
+  Future stats;
 
   @override
   void initState() {
@@ -36,67 +37,78 @@ class _SellScreenState extends State<SellScreen> {
     });
   }
 
+  void refresh() {
+    if (_cottonType != null && _marketType != null) {
+      print('Fetching');
+      stats = Provider.of<SellResource>(context, listen: false)
+          .getStats(cottonType: _cottonType.id, marketType: _marketType.id);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: SingleChildScrollView(
-        child: Consumer<SellResource>(builder:
-            (BuildContext context, SellResource resource, Widget child) {
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                buildActionItems(resource),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: buildCottonTypes(resource),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: buildMarket(resource),
-                ),
-                buildTextFormField(
-                  controller: _quantityController,
-                  hint: 'Enter quantity',
-                  label: 'Quantity',
-                  variable: _quantity != null ? _quantity.toString() : '',
-                ),
-                buildTextFormField(
-                  controller: _sellingPriceController,
-                  hint: 'Enter selling price',
-                  label: 'Selling Price',
-                  variable:
-                      _sellingPrice != null ? _sellingPrice.toString() : '',
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
-                  child: FlatButton(
-                    color: Values.PRIMARY_COLOR,
-                    onPressed: () {
-                      _sellingPrice = int.parse(_sellingPriceController.text);
-                      _quantity = int.parse(_quantityController.text);
-                      resource.sell(
-                          userId:
-                              Provider.of<AuthResource>(context, listen: false)
-                                  .user
-                                  .id,
-                          cottonType: _cottonType.id,
-                          market: _marketType.id,
-                          sellingPrice: _sellingPrice,
-                          quantity: _quantity);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: TextTranslator('Sell'),
+    return Scaffold(
+      body: Container(
+        child: SingleChildScrollView(
+          child: Consumer<SellResource>(builder:
+              (BuildContext context, SellResource resource, Widget child) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  buildActionItems(resource),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: buildCottonTypes(resource),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: buildMarket(resource),
+                  ),
+                  buildTextFormField(
+                    controller: _quantityController,
+                    hint: 'Enter quantity',
+                    label: 'Quantity',
+                    variable: _quantity != null ? _quantity.toString() : '',
+                  ),
+                  buildTextFormField(
+                    controller: _sellingPriceController,
+                    hint: 'Enter selling price',
+                    label: 'Selling Price',
+                    variable:
+                        _sellingPrice != null ? _sellingPrice.toString() : '',
+                  ),
+                  Center(child: buildPredictedPrices(resource)),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
+                    child: FlatButton(
+                      color: Values.PRIMARY_COLOR,
+                      onPressed: () {
+                        _sellingPrice = int.parse(_sellingPriceController.text);
+                        _quantity = int.parse(_quantityController.text);
+                        resource.sell(
+                            userId: Provider.of<AuthResource>(context,
+                                    listen: false)
+                                .user
+                                .id,
+                            cottonType: _cottonType.id,
+                            market: _marketType.id,
+                            sellingPrice: _sellingPrice,
+                            quantity: _quantity);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: TextTranslator('Sell'),
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }),
+                ],
+              ),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -117,6 +129,42 @@ class _SellScreenState extends State<SellScreen> {
         ),
       ],
     );
+  }
+
+  Widget buildPredictedPrices(SellResource resource) {
+    return FutureBuilder(
+        future: stats,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: resource.stats.length > 0
+                  ? DataTable(
+                      columns: [
+                        DataColumn(label: TextTranslator('Date')),
+                        DataColumn(label: TextTranslator('Predicted Price')),
+                      ],
+                      rows: resource.stats
+                          .where((element) => element.period == 'Daily')
+                          .map((e) => DataRow(
+                                cells: [
+                                  DataCell(Text(e.date)),
+                                  DataCell(Text(e.prediction)),
+                                ],
+                              ))
+                          .toList(),
+                    )
+                  : Container(),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.active ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Container();
+        });
   }
 
   void buildOrderItems(List<Inventory> inventoryItem) {
@@ -171,6 +219,7 @@ class _SellScreenState extends State<SellScreen> {
                   setState(() {
                     _cottonType = cottonType;
                   });
+                  refresh();
                 },
                 value: _cottonType,
                 items: resource.cottonTypes.map((cottonType) {
@@ -204,6 +253,7 @@ class _SellScreenState extends State<SellScreen> {
                   setState(() {
                     _marketType = marketType;
                   });
+                  refresh();
                 },
                 value: _marketType,
                 items: resource.marketTypes.map((market) {

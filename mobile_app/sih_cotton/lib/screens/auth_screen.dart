@@ -6,6 +6,7 @@ import 'package:sih_cotton/screens/buy_screen.dart';
 import 'package:sih_cotton/screens/home_screen.dart';
 import 'package:sih_cotton/values/styles.dart';
 import 'package:sih_cotton/values/values.dart';
+import 'package:sih_cotton/widgets/restart_widget.dart';
 
 class AuthScreen extends StatefulWidget {
   AuthScreen({Key key}) : super(key: key);
@@ -67,7 +68,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 return CircularProgressIndicator();
                 break;
               case AuthStatus.Authenticated:
-                return HomeScreen();
+                return RestartWidget(child: HomeScreen());
                 break;
               case AuthStatus.Unauthenticated:
                 return buildForm(resource);
@@ -101,6 +102,8 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     height: 100.0,
                     child: Image(
+                        width: 500.0,
+                        height: 500.0,
                         image:
                             AssetImage('assets/images/logo_transparent.png'))),
               ),

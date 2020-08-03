@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sih_cotton/resources/analysis_resource.dart';
+import 'package:sih_cotton/widgets/heatmap.dart';
 import 'package:sih_cotton/widgets/prediction_bar_chart.dart';
 import 'package:sih_cotton/widgets/prediction_chart.dart';
+import 'package:sih_cotton/widgets/text_translator.dart';
 
 class AnalysisScreen extends StatefulWidget {
   @override
@@ -26,7 +28,6 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 Future.microtask(() async {
                   await resource.getCottonTypes();
                   await resource.getMarketTypes();
-                  await resource.getStats();
                 });
                 return Center(
                     child: Padding(
@@ -45,9 +46,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 break;
               default:
                 return Center(
-                  child: Container(
-                    child: Text('Widget missing'),
-                  ),
+                  child: Container(child: buildAnalysisMain(resource)),
                 );
             }
           },
@@ -58,23 +57,28 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
 
   Widget buildAnalysisMain(AnalysisResource resource) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         ListTile(
-          title: Text('Prediction (Daily/Weekly/Monthly)'),
+          title: TextTranslator('Prediction (Daily/Weekly/Monthly)'),
           onTap: () {
             buildPopup(PredictionChart(resource),
                 'Prediction for each cotton type', resource);
           },
         ),
         ListTile(
-          title: Text('Prediction (all cotton type)'),
+          title: TextTranslator('Prediction (all cotton type)'),
           onTap: () {
             buildPopup(PredictionBarChart(resource),
                 'Prediction for all cotton type', resource);
           },
         ),
         ListTile(
-          title: Text('Heat map'),
+          title: TextTranslator('Heat map'),
+          onTap: () {
+            buildPopup(HeatMapWidget(resource), 'HeatMap', resource);
+          },
         ),
       ],
     );
@@ -86,7 +90,7 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.white,
-              title: Text(title),
+              title: TextTranslator(title),
             ),
             body: widget,
           );

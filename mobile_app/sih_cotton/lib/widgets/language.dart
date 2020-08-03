@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sih_cotton/values/values.dart';
+import 'package:sih_cotton/widgets/restart_widget.dart';
 import 'package:sih_cotton/widgets/text_translator.dart';
 
 class LanguageWidget extends StatefulWidget {
@@ -52,7 +53,9 @@ class _LanguageWidgetState extends State<LanguageWidget> {
                                   : FontWeight.normal),
                         ),
                         selected: entry.value == selected,
-                        onTap: () => setState(() => selected = entry.value),
+                        onTap: () {
+                          setState(() => selected = entry.value);
+                        },
                       ),
                     ))
                 .toList()),
@@ -65,6 +68,7 @@ class _LanguageWidgetState extends State<LanguageWidget> {
               });
               (await SharedPreferences.getInstance())
                   .setString('language', selected);
+              Navigator.pop(context);
             }
           },
           child: TextTranslator('Select')),

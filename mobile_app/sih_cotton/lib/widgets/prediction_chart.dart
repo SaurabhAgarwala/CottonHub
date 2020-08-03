@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sih_cotton/models/cotton_type.dart';
+import 'package:sih_cotton/models/market_type.dart';
 import 'package:sih_cotton/models/stat.dart';
 import 'package:sih_cotton/resources/analysis_resource.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:sih_cotton/widgets/text_translator.dart';
 
 class PredictionChart extends StatefulWidget {
   final AnalysisResource resource;
@@ -16,64 +18,133 @@ class PredictionChart extends StatefulWidget {
 
 class _PredictionChartState extends State<PredictionChart> {
   CottonType predictionCottonType;
+  MarketType marketType;
   String period;
+  Future load;
   List<Stat> stats = [];
+  bool dataTable = false;
 
   @override
   void initState() {
     super.initState();
     predictionCottonType = widget.resource.cottonTypes.first;
+    marketType = widget.resource.marketTypes.first;
     period = 'Daily';
-    refresh();
+    load = refresh();
   }
 
-  void refresh() {
-    stats.clear();
-    stats = widget.resource.stats
-        .where((element) =>
-            element.cottonType.id == predictionCottonType.id &&
-                element.period == period ??
-            'Daily')
-        .toList();
+  Future refresh() async {
+    if (stats.length > 0) {
+      if (stats.first.cottonType.id != predictionCottonType.id ||
+          stats.first.market.id != marketType.id) {
+        await widget.resource.getStats(
+            cottonType: predictionCottonType.id, marketType: marketType.id);
+        stats = widget.resource.stats
+            .where((element) => element.period == period)
+            .toList();
+        if (stats.length == 0) {
+          Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text('No data'),
+          ));
+        }
+      }
+    } else {
+      await widget.resource.getStats(
+          cottonType: predictionCottonType.id, marketType: marketType.id);
+      stats = widget.resource.stats
+          .where((element) =>
+              element.cottonType.id == predictionCottonType.id &&
+              element.period == period &&
+              element.market.id == marketType.id)
+          .toList();
+      if (stats.length == 0) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text('No data'),
+        ));
+      }
+    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
-      child: buildPredictionStats(widget.resource),
+      child: FutureBuilder(
+          future: load,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return buildPredictionStats(widget.resource);
+            }
+            if (snapshot.connectionState == ConnectionState.active ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Container();
+          }),
     );
   }
 
   Widget buildPredictionStats(AnalysisResource resource) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        buildCottonTypes(resource),
-        DropdownButton<String>(
-          items: [
-            DropdownMenuItem(
-              child: Text('Daily'),
-              value: 'Daily',
-            ),
-            DropdownMenuItem(
-              child: Text('Weekly'),
-              value: 'Weekly',
-            ),
-            DropdownMenuItem(
-              child: Text('Monthly'),
-              value: 'Monthly',
-            ),
-          ],
-          onChanged: (value) {
-            setState(() => period = value);
-            refresh();
-          },
-          value: period,
-        ),
-        getBarChart(resource),
-      ],
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          buildCottonTypes(resource),
+          buildMarket(resource),
+          DropdownButton<String>(
+            items: [
+              DropdownMenuItem(
+                child: Text('Daily'),
+                value: 'Daily',
+              ),
+              DropdownMenuItem(
+                child: Text('Weekly'),
+                value: 'Weekly',
+              ),
+              DropdownMenuItem(
+                child: Text('Monthly'),
+                value: 'Monthly',
+              ),
+            ],
+            onChanged: (value) {
+              setState(() => period = value);
+              refresh();
+            },
+            value: period,
+          ),
+          Card(
+              child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: getBarChart(resource),
+          )),
+          Divider(),
+          Card(child: buildPredictedPrices(resource)),
+        ],
+      ),
     );
+  }
+
+  Widget buildPredictedPrices(AnalysisResource resource) {
+    return stats.length > 0
+        ? DataTable(
+            columns: [
+              DataColumn(label: TextTranslator('Date')),
+              DataColumn(label: TextTranslator('Predicted Price')),
+            ],
+            rows: stats
+                .where((element) => element.period == period)
+                .map((e) => DataRow(
+                      cells: [
+                        DataCell(Text(e.date)),
+                        DataCell(Text(e.prediction)),
+                      ],
+                    ))
+                .toList(),
+          )
+        : Container();
   }
 
   Widget getBarChart(AnalysisResource resource) {
@@ -126,7 +197,7 @@ class _PredictionChartState extends State<PredictionChart> {
 
   Widget buildCottonTypes(AnalysisResource resource) {
     return FutureBuilder(
-        future: resource.getCottonTypes(),
+        future: load,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return Padding(
@@ -146,6 +217,40 @@ class _PredictionChartState extends State<PredictionChart> {
                   return DropdownMenuItem<CottonType>(
                     value: cottonType,
                     child: Text(cottonType.name),
+                  );
+                }).toList(),
+              ),
+            );
+          }
+          if (snapshot.connectionState == ConnectionState.active ||
+              snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return Container();
+        });
+  }
+
+  Widget buildMarket(AnalysisResource resource) {
+    return FutureBuilder(
+        future: load,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: DropdownButton<MarketType>(
+                isExpanded: true,
+                hint: Text('Select Market'),
+                onChanged: (marketType) {
+                  setState(() {
+                    this.marketType = marketType;
+                  });
+                  refresh();
+                },
+                value: this.marketType,
+                items: resource.marketTypes.map((market) {
+                  return DropdownMenuItem<MarketType>(
+                    value: market,
+                    child: Text(market.name),
                   );
                 }).toList(),
               ),

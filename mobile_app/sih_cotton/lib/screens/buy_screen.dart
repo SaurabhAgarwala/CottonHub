@@ -31,7 +31,7 @@ class _BuyScreenState extends State<BuyScreen> {
         .stream
         .listen((event) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(event),
+        content: TextTranslator(event),
       ));
     });
   }
@@ -69,7 +69,7 @@ class _BuyScreenState extends State<BuyScreen> {
               default:
                 return Center(
                   child: Container(
-                    child: Text('Widget missing'),
+                    child: TextTranslator('Widget missing'),
                   ),
                 );
             }
@@ -87,12 +87,6 @@ class _BuyScreenState extends State<BuyScreen> {
         buildActionItems(resource),
         buildCottonTypes(resource),
         // buildMarket(resource),
-        buildTextFormField(
-          controller: _quantityController,
-          hint: 'Enter Quantity',
-          label: 'Quantity',
-          variable: _quantity != null ? _quantity.toString() : '',
-        ),
         buildInventory(resource)
       ],
     );
@@ -113,19 +107,55 @@ class _BuyScreenState extends State<BuyScreen> {
           child: TextTranslator('My Orders'),
         ),
         OutlineButton(
-            padding: EdgeInsets.all(0.0),
-            color: Values.PRIMARY_COLOR,
-            onPressed: () async {
-              await resource.fetchMyCart();
-              buildOrderItems(resource.cart, 'Cart');
-              resource.myOrders;
-            },
-            child: TextTranslator('Cart'))
+          padding: EdgeInsets.all(0.0),
+          color: Values.PRIMARY_COLOR,
+          onPressed: () async {
+            await resource.fetchMyCart();
+            buildOrderItems(resource.cart, 'Cart',
+                button: Container(
+                  color: Values.PRIMARY_COLOR,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextTranslator(
+                              'Total : ₹${resource.cart.fold(0, (previousValue, element) => previousValue + (element.inventory.sellingPrice * element.quantity))}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18.0),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FlatButton(
+                                color: Values.SECONDARY_COLOR,
+                                onPressed: () {
+                                  resource.cart.forEach((element) async {
+                                    await resource.placeOrder(id: element.id);
+                                  });
+                                  resource.fetchMyCart();
+                                },
+                                child: TextTranslator('Place Order')),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ));
+            resource.myOrders;
+          },
+          child: TextTranslator('Cart'),
+        )
       ],
     );
   }
 
-  void buildOrderItems(List<OrderItem> orderItems, String label) {
+  void buildOrderItems(List<OrderItem> orderItems, String label,
+      {Widget button}) {
     Navigator.of(context).push(new MaterialPageRoute<Null>(
         builder: (BuildContext context) {
           return Scaffold(
@@ -137,19 +167,22 @@ class _BuyScreenState extends State<BuyScreen> {
               shrinkWrap: true,
               children: orderItems.map((orderItem) {
                 return ListTile(
-                  trailing: Text(
-                    '₹${orderItem.inventory.sellingPrice.toString().padLeft(5)}',
+                  trailing: TextTranslator(
+                    '₹${(orderItem.inventory.sellingPrice * orderItem.quantity).toString().padLeft(5)}',
                     style: TextStyle(
                         color: Values.ACCENT_COLOR,
                         fontSize: 18.0,
                         fontWeight: FontWeight.w600),
                   ),
-                  title: Text(orderItem.inventory.product.user.firstName),
-                  subtitle: Text('${orderItem.quantity.toString()} units.'),
-                  // subtitle: Text('${orderItem.stock} units left'),
+                  title: TextTranslator(
+                      orderItem.inventory.product.user.firstName),
+                  subtitle:
+                      TextTranslator('${orderItem.quantity.toString()} units.'),
+                  // subtitle: TextTranslator('${orderItem.stock} units left'),
                 );
               }).toList(),
             ),
+            bottomNavigationBar: button,
           );
         },
         fullscreenDialog: true));
@@ -201,37 +234,103 @@ class _BuyScreenState extends State<BuyScreen> {
           itemBuilder: (context, int pos) {
             Inventory inventory = list[pos];
             return ListTile(
-              leading: Text(
-                '₹${inventory.sellingPrice.toString().padLeft(5)}',
+              trailing: TextTranslator(
+                '₹${inventory.sellingPrice.toString().padRight(5)}',
                 style: TextStyle(
                     color: Values.ACCENT_COLOR,
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600),
               ),
-              trailing: FlatButton(
-                color: Values.PRIMARY_COLOR,
-                onPressed: () {
-                  if (_quantityController.text.isNotEmpty) {
-                    _quantity = int.parse(_quantityController.text);
-                    User user =
-                        Provider.of<AuthResource>(context, listen: false).user;
-                    resource.buy(
-                      userId: user.id,
-                      cottonType: selectedCottonType.id,
-                      inventoryId: inventory.id,
-                      name: user.firstName,
-                      shippingAddress: user.address,
-                      mobile: user.username,
-                      quantity: _quantity,
-                    );
-                  } else {
-                    resource.notification.sink.add('Enter quantity');
-                  }
-                },
-                child: Text('Buy'),
-              ),
-              title: Text(inventory.product.user.firstName),
-              subtitle: Text('${inventory.stock} units left'),
+              onTap: () {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: TextTranslator('Buy'),
+                        content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8.0),
+                                child: buildTextFormField(
+                                  controller: _quantityController,
+                                  hint: 'Enter Quantity',
+                                  label: 'Quantity',
+                                  variable: _quantity != null
+                                      ? _quantity.toString()
+                                      : '',
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: FlatButton(
+                                  color: Values.PRIMARY_COLOR,
+                                  onPressed: () async {
+                                    if (_quantityController.text.isNotEmpty) {
+                                      _quantity =
+                                          int.parse(_quantityController.text);
+                                      User user = Provider.of<AuthResource>(
+                                              context,
+                                              listen: false)
+                                          .user;
+                                      dynamic id = await resource.addToCart(
+                                        userId: user.id,
+                                        cottonType: selectedCottonType.id,
+                                        inventoryId: inventory.id,
+                                        name: user.firstName,
+                                        shippingAddress: user.address,
+                                        mobile: user.username,
+                                        quantity: _quantity,
+                                      );
+                                      if (id != null) {
+                                        await resource.placeOrder(id: id);
+                                      }
+                                      Navigator.pop(context);
+                                    } else {
+                                      resource.notification.sink
+                                          .add('Enter quantity');
+                                    }
+                                  },
+                                  child: TextTranslator('Buy'),
+                                ),
+                              ),
+                              FlatButton(
+                                color: Values.SECONDARY_COLOR,
+                                onPressed: () {
+                                  if (_quantityController.text.isNotEmpty) {
+                                    _quantity =
+                                        int.parse(_quantityController.text);
+                                    User user = Provider.of<AuthResource>(
+                                            context,
+                                            listen: false)
+                                        .user;
+                                    resource.addToCart(
+                                      userId: user.id,
+                                      cottonType: selectedCottonType.id,
+                                      inventoryId: inventory.id,
+                                      name: user.firstName,
+                                      shippingAddress: user.address,
+                                      mobile: user.username,
+                                      quantity: _quantity,
+                                    );
+                                    Navigator.pop(context);
+                                    resource.notification.add('Added to cart');
+                                  } else {
+                                    resource.notification.sink
+                                        .add('Enter quantity');
+                                  }
+                                },
+                                child: TextTranslator('Add to Cart'),
+                              )
+                            ]),
+                      );
+                    });
+              },
+              title: TextTranslator(inventory.product.user.firstName),
+              subtitle: TextTranslator('${inventory.stock} units left'),
             );
           }),
     );
@@ -246,7 +345,7 @@ class _BuyScreenState extends State<BuyScreen> {
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: DropdownButton<CottonType>(
                 isExpanded: true,
-                hint: Text('Select Cotton Type'),
+                hint: TextTranslator('Select Cotton Type'),
                 onChanged: (cottonType) {
                   setState(() {
                     selectedCottonType = cottonType;
@@ -256,7 +355,7 @@ class _BuyScreenState extends State<BuyScreen> {
                 items: resource.cottonTypes.map((cottonType) {
                   return DropdownMenuItem<CottonType>(
                     value: cottonType,
-                    child: Text(cottonType.name),
+                    child: TextTranslator(cottonType.name),
                   );
                 }).toList(),
               ),
@@ -279,7 +378,7 @@ class _BuyScreenState extends State<BuyScreen> {
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: DropdownButton<MarketType>(
                 isExpanded: true,
-                hint: Text('Select Market'),
+                hint: TextTranslator('Select Market'),
                 onChanged: (marketType) {
                   setState(() {
                     selectedMarketType = marketType;
@@ -289,7 +388,7 @@ class _BuyScreenState extends State<BuyScreen> {
                 items: resource.marketTypes.map((market) {
                   return DropdownMenuItem<MarketType>(
                     value: market,
-                    child: Text(market.name),
+                    child: TextTranslator(market.name),
                   );
                 }).toList(),
               ),
