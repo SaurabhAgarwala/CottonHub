@@ -17,6 +17,7 @@ from rest_framework import viewsets
 import random
 import requests
 import json
+import base64
 
 
 def generateOtp():
@@ -260,3 +261,37 @@ def placeOrder(request, id):
 
     response_data = {"status": True}
     return Response(data=response_data)
+
+
+class FrequentQuestionViewSet(viewsets.ModelViewSet):
+    queryset = models.FrequentQuestion.objects.all()
+    serializer_class = serializers.FrequentQuestionSerializer
+
+
+class ComplainViewSet(viewsets.ModelViewSet):
+    queryset = models.Complain.objects.all()
+    serializer_class = serializers.ComplainSerializer
+
+
+class OpinionViewSet(viewsets.ModelViewSet):
+    queryset = models.Opinion.objects.all()
+    serializer_class = serializers.OpinionSerializer
+
+@api_view(['GET'])
+def getHeatMap(request):
+    print(request.GET)
+    state = request.GET.get("state")
+    year = request.GET.get("year")
+    print(state, year)
+    print('static/image/heatmap_'+state+"_"+year+'.png')
+    image = open('static/image/heatmap_'+state+"_"+year+'.png', 'rb') #open binary file in read mode
+    image_read = image.read()
+    image_64_encode = base64.encodestring(image_read)
+
+    data = {
+        "image": image_64_encode
+    }
+
+    return Response(data)
+
+    

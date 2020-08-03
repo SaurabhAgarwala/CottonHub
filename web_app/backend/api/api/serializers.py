@@ -11,6 +11,7 @@ class UserCreateSerializer(UserCreateSerializer):
             "id",
             "username",
             "email",
+            "role",
             "pan",
             "aadhar",
             "first_name",
@@ -96,5 +97,23 @@ class AnalysisSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Analysis
+        fields = "__all__"
+
+
+class FrequentQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FrequentQuestion
+        fields = "__all__"
+
+
+class ComplainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Complain
+        fields = "__all__"
+
+
+class OpinionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Opinion
         fields = "__all__"
 

@@ -11,14 +11,11 @@ PERIOD = (
 
 class User(AbstractUser):
 
-    CUSTOMER = 1
-    FARMER = 2
-    MINISTRY = 3
-
-    GROUP_CHOICES = (
-        (CUSTOMER, "Customer"),
-        (FARMER, "Farmer"),
-        (MINISTRY, "Ministry"),
+    ROLES = (
+        ("Admin", "Admin"),
+        ("Customer", "Customer"),
+        ("Farmer", "Farmer"),
+        ("Ministry", "Ministry"),
     )
 
     email = models.CharField(max_length=50, null=True, blank=True)
@@ -30,10 +27,13 @@ class User(AbstractUser):
     )
     gst = models.CharField(max_length=20, default="")
     REQUIRED_FIELDS = ["email", "pan", "aadhar", "first_name", "last_name"]
+    role = models.CharField(
+        max_length=10, choices=ROLES, default="Customer", blank=False
+    )
 
     def __str__(self):
 
-        return self.username + "  " + self.first_name
+        return self.username + "  " + self.first_name + " " + self.role
 
 
 class PhoneOtp(models.Model):
@@ -121,3 +121,26 @@ class Analysis(models.Model):
             + str(self.date)
         )
 
+
+class FrequentQuestion(models.Model):
+    question = models.CharField(max_length=100, blank=False)
+    answer = models.TextField(blank=False)
+
+    def __str__(self):
+        return self.question
+
+
+class Complain(models.Model):
+    subject = models.CharField(max_length=100, blank=False)
+    body = models.TextField(blank=False)
+
+    def __str__(self):
+        return self.subject
+
+
+class Opinion(models.Model):
+    subject = models.CharField(max_length=100, blank=False)
+    body = models.TextField(blank=False)
+
+    def __str__(self):
+        return self.subject
