@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CottonHub</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet'>
+    <link rel="stylesheet" type = "text/css" href='{% static "/css/style-login.css" %}'>
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' type='image/x-icon' %}">
+
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+          pageLanguage: 'en', 
+          includedLanguages: "hi,en,bn,ta,te,kn,as,gu,mr"
+          }, 
+        'google_translate_element');
+      }
+      </script>
+      <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm">
+        <!-- Brand/logo -->
+        <a class="navbar-brand" href="#">
+          <img src="{% static 'img/logo_circular.png' %}"  style="width:80px;">
+        </a>
+        
+        <!-- Links -->
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link test" href="/dashboard/">CottonHub</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/analysis/">Analysis</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/buy/">Buy</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sell/">Sell</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/cart/">Cart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/userinventory/">Inventory</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/orderhistory/">Order History</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/profile/">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/logout/">Logout</a>
+          </li>
+        </ul>
+      </nav>
+      <div id="google_translate_element"></div>
+    {% block content %}
+    {% endblock %}
+    <!-- Footer -->
+    <footer class="page-footer font-small blue" style="width: 100%;bottom:0;position:fixed;background-color: #746962;">
+      <div class="info" style="background-color:  #746962;color: azure;">
+          <div class="row">
+            <div class="col-sm-2 py-2">
+              <ul style="list-style-type: none;color: azure;">
+                <li><a href="/privacypolicy" style="text-decoration: none;color: azure;">Privacy Policy</a></li>
+              </ul>
+          </div>
+          <div class="col-sm-2 py-2">
+            <ul style="list-style-type: none;color: azure;">
+              <li><a href="http://texmin.nic.in/" style="text-decoration: none;color: azure;">Home | Ministry of Textiles | GoI</a></li>
+            </ul>
+        </div>
+            <div class="col-sm-4">
+              <div class="footer-copyright text-center py-2" style="color: azure;">© 2020 Copyright:
+                <a href="/dashboard" style="text-decoration: none;color: rgb(5, 9, 71);"> CottonHub.com</a>
+              </div>
+            </div>
+            <div class="col-sm-2 py-2">
+              <ul style="list-style-type: none;color: azure;">
+                <li><a href="/feedback" style="text-decoration: none;color: azure;">Feedback</a></li>
+              </ul>
+            </div>
+            <div class="col-sm-2 py-2">
+              <ul style="list-style-type: none;color: azure;">
+                <li><a href="/faq" style="text-decoration: none;color: azure;">FAQ</a></li>
+              </ul>
+            </div>
+          </div>
+      </div>
+      <!-- Copyright-->
+    
+    </footer>
+</body>
+</html>

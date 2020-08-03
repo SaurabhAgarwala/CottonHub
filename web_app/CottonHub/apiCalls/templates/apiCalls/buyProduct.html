@@ -1,0 +1,139 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <div class="container-fluid foo-padding" style="padding-bottom: 100px;">
+        <div class="row">
+            
+            <div class="col-sm-2">
+            </div>
+
+            <div class="col-sm-8">
+                <div class="logincontainer">
+                    <form action="/buy/" method = "POST">
+                        
+                        <div class="heading">
+                            <h3>Buy</h3>
+                        </div>
+
+                        <div class="wrap-input">
+                            <select class="form-control" id="cottontypes" name = "cottontype">
+                                <option disabled selected value> Select Cotton Variety</option>
+                              </select>
+                        </div>
+                       
+                        <div class="wrap-input">
+                            <div id = "inventoryDiv">
+                            
+                            </div>
+                        </div>
+                          
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="quantity" placeholder="Quantity" required="true">                           
+                        </div>
+                        
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="name" placeholder="Name" required="true">                           
+                        </div>
+                        <div class="wrap-input">
+                            <input class="input" type="number" value = "" name="mobile" placeholder="Phone no." required="true">                           
+                        </div>
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="address" placeholder="Enter Shipping address" required="true">                           
+                        </div>
+
+                        <div class="login-btn">
+                            <button type = "submit" class="login-form-btn">
+                                Add To Inventory
+                            </button>
+                        </div>
+
+                    <div class="flex-col-c">
+                        
+                    </div>
+                       
+                    </form>
+                
+            <div class="col-sm-2">
+                
+            </div>
+
+        </div>
+    </div>
+<!-- </div> -->
+
+<script>
+    window.onload = () => {
+        console.log("here ")
+
+        let headers = new Headers({
+            "Accept"       : "application/json",
+            "Content-Type" : "application/json",
+            "Origin": "http://localhost:8000",
+            // "User-Agent"   : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36"
+        });
+
+
+        fetch("http://localhost:8000/getcottontypes/",{
+            method: 'GET',
+            headers : headers,
+        })
+        .then(function(response) {
+            console.log(response)
+            return response.json()
+        })
+        .then((resp)=> {
+            console.log(resp)
+            // console.log(resp[0])
+            cottontypes = document.getElementById("cottontypes")
+            for(var i=0;i<resp.length;i++){
+                var option = document.createElement('option');
+                option.text = resp[i].name;
+                option.value = resp[i].id
+                cottontypes.add(option);
+            }
+        })
+    }
+</script>
+
+<script>
+    document.getElementById("cottontypes").onchange = changeListener;
+
+    function changeListener(){
+        var value = this.value
+        console.log(value)
+        
+        loadInventory(value)
+    }
+
+    function loadInventory(cotton_type_id) {
+        console.log("here in inventry")
+        let headers = new Headers({
+            "Accept": "application/json"
+        })
+        fetch("http://localhost:8000/inventory/",{
+            method: "get"
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((inventoryList) => {
+            console.log(inventoryList)
+            inventoryDiv = document.getElementById("inventoryDiv")
+            inventoryDiv.innerHTML = ''
+            for(var i = 0;i<inventoryList.length;i++){
+
+                if (inventoryList[i].product.cotton_type.id == cotton_type_id){
+                    inventoryDiv.innerHTML += '<div class="card bg-light text-dark"><div class="card-body">'+
+                        '<input type="checkbox" id="vehicle1" name="inventoryId"' + 'value='+ inventoryList[i].id +'>'
+                                    + inventoryList[i].product.user.first_name + "  " + 
+                                inventoryList[i].quantity + "  " + inventoryList[i].selling_price + "</div></div><br>"
+                                
+                }
+            }
+        })
+    }
+</script>
+
+{% endblock %}

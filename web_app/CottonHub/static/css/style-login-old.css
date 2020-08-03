@@ -1,0 +1,127 @@
+body{
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: rgb(231, 234, 177);
+    background-blend-mode: lighten;
+    height: 100%;
+    min-height: 100%;
+}
+.welcome h1{
+    text-align: center;
+    font-weight: bolder;
+    color: azure;
+}
+.logincontainer{
+    background-color:  rgb(246, 248, 246);  
+    border-radius: 20px 20px 20px 20px; 
+    text-align: center;
+    margin: 10px;
+    
+}
+
+.goog-logo-link {
+    display:none !important;
+  } 
+  
+  .goog-te-gadget{
+    color: transparent !important;
+  }
+
+.heading h3{
+    background-color: #b7ce63; 
+    border-radius: 20px 20px 0px 0px;  
+    font-weight: bold;
+    color: rgba(250, 249, 249, 0.986);
+    padding: 30px;
+}
+.wrap-input{
+    background-color: rgb(246, 248, 246);
+    padding: 20px;
+}
+
+.input{
+    border-radius: 20px;
+    border: none;
+    background-color: rgb(234, 241, 233);
+    padding: 10px;
+    width: 100%;
+    font-weight: bold;
+}
+
+.wrap-input:focus{
+
+    border-style: none;
+}
+.login-form-btn{
+    border-radius: 20px;
+    border: none;
+    background-color:#b7ce63 ;
+    padding: 10px;
+    width: 70%;
+    margin: 10px;
+    font-weight: bold;
+}
+.login-form-btn:hover{
+    background-color:#aac05d ;
+}
+
+.login-btn{
+    background-color: rgb(246, 247, 248);
+    color: rgba(250, 249, 249, 0.986);
+}
+
+.flex-col-c{
+    background-color:rgb(246, 247, 248) ;  
+    padding: 20px;
+    border-radius: 0px 0px 20px 20px; 
+}
+
+.txt1{
+    font-weight: bold;
+}
+
+.txt2{
+    font-weight: bold;
+}
+
+.navbar{
+    background-color: #463f3a;
+    color: white !important;
+}
+.nav-link{
+    color: azure;
+    font-weight: bolder;
+}
+.nav-link:hover{
+    color: rgb(194, 223, 223);   
+}
+.test{
+    color: azure;
+    font-family: "Sofia";
+}
+
+#inventoryDiv{
+    /* background-color: #463f3a; */
+    padding: 0;
+    /* width: 20%; */
+    
+}
+
+.table-inventory {
+    border-collapse: collapse;
+    text-align: center;
+    margin: auto;
+    width: 50% !important; 
+  }
+  
+.table-inventory  th, td {
+    text-align: center;
+    padding: 10px;
+  }
+.table-inventory tr:hover {background-color:#EEF1EF !important;} 
+  tr:nth-child(even) {background-color: rgb(220, 224, 145);;}
+
+.table-inventory th{background-color: #B7CE63;
+    font-family: 'Rock Salt', cursive; }
+
+

@@ -1,0 +1,290 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+
+    .clearfix {
+      content: "";
+      display: table;
+      clear: both;  
+    }
+    
+    a {
+        color: #000;
+        text-decoration: none;
+    
+        -webkit-transition: color .2s linear;
+        -moz-transition: color .2s linear;
+        -ms-transition: color .2s linear;
+        -o-transition: color .2s linear;
+        transition: color .2s linear;
+    }
+    
+    a:hover {
+        color: #53b5aa;
+    }
+
+    header h1 span.is-open {
+    left: 363px;
+    }
+
+    .remove {
+    cursor: pointer;
+    }
+    
+    
+    .container {
+        font-family: 'Open Sans', sans-serif;
+        margin: 0 auto;
+        width: 980px;
+    }
+
+
+    
+    #cart {
+        width: 100%;
+    }
+    
+    #cart h1 {
+        font-weight: 300;
+    }
+    
+    #cart a {
+        color: #53b5aa;
+        text-decoration: none;
+    
+        -webkit-transition: color .2s linear;
+        -moz-transition: color .2s linear;
+        -ms-transition: color .2s linear;
+        -o-transition: color .2s linear;
+        transition: color .2s linear;
+    }
+    
+    #cart a:hover {
+        color: #000;
+    }
+    
+    
+    .product {
+        /* border: 1px solid #eee; */
+        margin: 20px 0;
+        width: 100%;
+        height: 195px;
+        position: relative;
+    
+        -webkit-transition: margin .2s linear, opacity .2s linear;
+        -moz-transition: margin .2s linear, opacity .2s linear;
+        -ms-transition: margin .2s linear, opacity .2s linear;
+        -o-transition: margin .2s linear, opacity .2s linear;
+        transition: margin .2s linear, opacity .2s linear;
+    }
+    
+    
+    .product header, .product .content {
+        background-color: #fff;
+        border: 1px solid rgb(231, 234, 177);
+        border-style: none none solid none;
+        float: left;
+    }
+    
+    .product header {
+        background: rgb(231, 234, 177);
+        margin: 0 1% 20px 0;
+        overflow: hidden;
+        padding: 0;
+        position: relative;
+        width: 24%;
+        height: 195px;
+    }
+    
+    .product header:hover img {
+        opacity: .7;
+    }
+    
+    
+    
+    
+    .product .content {
+        box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        height: 140px;
+        padding: 0 20px;
+        width: 75%;
+    }
+    
+    .product h1 {
+        color: #000000;
+        font-size: 25px;
+        font-weight: 300;
+        margin: 17px 0 20px 0;
+    }
+    
+    .product footer.content {
+        height: 50px;
+        margin: 6px 0 0 0;
+        padding: 0;
+    }
+    
+    .product footer .price {
+        background: #fcfcfc;
+        color: #000;
+        float: right;
+        font-size: 15px;
+        font-weight: 300;
+        line-height: 49px;
+        margin: 0;
+        padding: 0 30px;
+    }
+    
+    .product footer .full-price {
+        background: #b7ce63;
+        color: rgb(15, 13, 13);
+        float: right;
+        font-size: 22px;
+        font-weight: 300;
+        line-height: 49px;
+        margin: 0;
+        padding: 0 30px;
+    
+        -webkit-transition: margin .15s linear;
+        -moz-transition: margin .15s linear;
+        -ms-transition: margin .15s linear;
+        -o-transition: margin .15s linear;
+        transition: margin .15s linear;
+    }
+    
+    .qt, .qt-plus, .qt-minus {
+        display: block;
+        float: left;
+    }
+    
+    .qt {
+        font-size: 19px;
+        line-height: 50px;
+        width: 70px;
+        text-align: center;
+    }
+    
+    .qt-plus, .qt-minus {
+        background: #fcfcfc;
+        border: none;
+        font-size: 20px;
+        font-weight: 300;
+        height: 100%;
+        padding: 0 20px;
+        -webkit-transition: background .2s linear;
+        -moz-transition: background .2s linear;
+        -ms-transition: background .2s linear;
+        -o-transition: background .2s linear;
+        transition: background .2s linear;
+    }
+    
+    .qt-plus:hover, .qt-minus:hover {
+        background: #b7ce63;
+        color: #fff;
+        cursor: pointer;
+    }
+    
+    .qt-plus {
+        line-height: 50px;
+    }
+    
+    .qt-minus {
+        line-height: 47px;
+    }
+    .btn {
+    margin: 10px; 
+    top: 0;
+    background: #b7ce63;
+    /* border: 1px solid #999;
+    border-style: none none solid none; */
+    cursor: pointer;
+    display: block;
+    color: rgb(3, 2, 2);
+    font-size: 15px;
+    font-weight: bolder;
+    padding: 16px 20px;
+    width: 220px;
+    text-align: center;
+
+    -webkit-transition: all .2s linear;
+    -moz-transition: all .2s linear;
+    -ms-transition: all .2s linear;
+    -o-transition: all .2s linear;
+    transition: all .2s linear;
+}
+
+.btn:hover {
+    color: #fff;
+    background: #829b2a;
+}
+
+    
+    
+    
+    </style>
+    
+    <div class="container" id = "orderHistory" style="padding-bottom: 100px;">
+        
+    </div>
+    
+    
+    
+        
+    
+    <script>
+    
+        fetch("http://localhost:8000/getorders/",{
+            method: "GET"
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .then((response) => {
+            console.log(response)
+            orderHistory = document.getElementById("orderHistory")
+            for(var i=0;i<response.length;i++){
+                if (response[i].order.purchased == false){
+                    var full_price = response[i].quantity * response[i].inventory.selling_price;
+                    console.log("order id", response[i].order.id)
+                    var order_id = response[i].order.id
+                    
+                    var url_delete = "/deleteorder/"+order_id;
+                    var url_placeorder = "/placeorder/"+order_id;
+                    
+                    orderHistory.innerHTML += '<section id="cart">'
+                                    +'<article class="product">'
+                                        +'<header><div id ="buttons">'
+                                        +'<a class= "remove" href ='+ url_delete +'><Button class = "btn">Remove product</Button></a>'
+                                        +'<a class = "remove" href ='+ url_placeorder +'><Button class="btn">Buy product</Button></a></div></header>'
+                                        
+                                        +'<div class="content">'
+            
+                                            +'<h1>'+response[i].inventory.product.cotton_type.name +'</h1>'
+                                            + response[i].inventory.product.cotton_type.description
+                                        +'</div>'
+                                        +'<footer class="content">'
+                                            +'<span class="qt-minus">Quantity -</span>'
+                                            +'<span class="qt">'+ response[i].quantity +'</span>'
+                                        
+                                            +'<h2 class="full-price" id="full-price">Rs. '+ full_price +'</h2>'
+                                            +'<h2 class="price">Selling Price per quintal - Rs. '+ response[i].inventory.selling_price +'</h2>'
+                                        +'</footer>'
+                                        
+                                    +'</article>'
+                                +'</section>'
+                }
+            }
+        })
+    
+    </script>
+    
+    <script>
+        function multiply(a,b){
+            result = a*b;
+            document.getElementById("full-price").innerHTML = result;
+        }
+    </script>
+
+{% endblock %}

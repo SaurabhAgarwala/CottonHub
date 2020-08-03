@@ -1,0 +1,47 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+    
+    <table class="table-inventory foo-padding" style="padding-bottom: 200px;" id="inventory">
+        <!--<tr>
+            <td colspan="3">Inventory</td>
+        </tr>-->
+        <tr>
+        <th>Cotton Type</th>
+        <th>Quantity (Quintal) </th>
+        <th>Selling Price (Rs.)</th>
+        <th>Delete</th>
+        </tr>
+
+
+
+<script>
+    window.onload = () => {
+
+        fetch("http://localhost:8000/getinventory/",{
+            method: "GET"
+        })
+        .then((response)=> {
+            return response.json()
+        })
+        .then((response)=>{
+            console.log(response)
+            inventoryDetails = document.getElementById("inventoryDetails")
+            for(var i=0; i< response.length; i++){
+                var table_inventory=document.getElementById('inventory').insertRow(-1);
+                var cottonType = table_inventory.insertCell(0);
+                var quantity = table_inventory.insertCell(1);
+                var sellingPrice = table_inventory.insertCell(2);
+                var delete_row = table_inventory.insertCell(3);
+                cottonType.innerHTML=response[i].product.cotton_type.name;
+                quantity.innerHTML=response[i].quantity;
+                sellingPrice.innerHTML=response[i].selling_price;
+                url_delete_inventory = "/deleteinventory/"+response[i].id;
+                delete_row.innerHTML='<a href='+ url_delete_inventory +'><img src="/static/img/delete.png" alt="" border=3 height=25 width=25></a>';
+                /* <input type="image" src="static/img/delete.png" alt="Submit" width="48" height="48">*/
+                }
+        })
+    }
+</script>
+
+{% endblock %}

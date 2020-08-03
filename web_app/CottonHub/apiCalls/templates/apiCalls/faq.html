@@ -1,0 +1,53 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" type = "text/css" href='{% static "/css/style-login.css" %}'>
+<div class="container-fluid">
+    <div class="row no-gutter">
+        <div class="d-none d-md-flex col-md-4 col-lg-4 bg-image-faq"></div>
+        <div class="col-md-8 col-lg-8">
+        <div class="login d-flex align-items-center py-5">
+            <div class="container"> 
+            <div class="row">
+                <div class="col-md-9 col-lg-8 mx-auto">
+                    <div class="logincontainer">
+                        <div class="heading">
+                            <h3>Frequently Asked Questions</h3>
+                        </div>
+                        <div class="wrap-input">
+                            <h4>1. This is a question</h4><br>
+                            <p>Answer</p>
+                        </div>
+                        <div class="flex-col-c">
+                            
+                        </div>
+                           
+                        </form>
+                    
+                <div class="col-sm-2">
+                    
+                </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    fetch("http://localhost:8000/getfaq",{
+        method: "GET",
+    })
+    .then((response) => {
+        return response.json()
+    })    
+    .then((response) => {
+        console.log(response)
+    })
+
+</script>
+
+{% endblock %}
