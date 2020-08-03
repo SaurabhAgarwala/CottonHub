@@ -1,0 +1,128 @@
+{% extends 'apiCalls/base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-2">
+            </div>
+
+            <div class="col-sm-8">
+                <div class="logincontainer">
+                    <form method = "POST" action = "">
+                        <div class="heading">
+                            <h3>Sell</h3>
+                        </div>
+
+                        <div class="wrap-input">
+                            <select name = "cottontypes" class="form-control" id="cottontypes">
+                                <option disabled selected value> -- select an option -- </option>
+                              </select>
+                        </div>
+                       
+                        <div class="wrap-input">
+                            <select name = "market" class="form-control" id="market">
+                                <option disabled selected value> -- select an option -- </option>
+                              </select>
+                        </div>
+                       
+                        
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="market" placeholder="Enter quantity available" required="true">                           
+                        </div>
+
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="quantity" placeholder="Enter quantity available" required="true">                           
+                        </div>
+                          
+                        <div class="wrap-input">
+                            <input class="input" type="text" value = "" name="price" placeholder="Enter Cotton Price" required="true">                           
+                        </div>
+                        
+                        <div class="login-btn">
+                            <button type = "submit" class="login-form-btn">
+                                Add to Inventory
+                            </button>
+                        </div>
+
+                        <div class="flex-col-c">
+                           
+                        </div>
+
+                     </form>   
+            <div class="col-sm-2">
+                
+            </div>
+
+        </div>
+    </div>
+    <script>
+        window.onload = () => {
+            console.log("here ")
+    
+            let headers = new Headers({
+                "Accept"       : "application/json",
+                "Content-Type" : "application/json",
+                "Origin": "http://localhost:8000",
+                // "User-Agent"   : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36"
+            });
+    
+    
+            fetch("http://localhost:8000/getcottontypes/",{
+                method: 'GET',
+                headers : headers,
+            })
+            .then(function(response) {
+                console.log(response)
+                return response.json()
+            })
+            .then((resp)=> {
+                cottontypes = document.getElementById("cottontypes")
+                for(var i=0;i<resp.length;i++){
+                    var option = document.createElement('option');
+                    option.text = resp[i].name;
+                    option.value = resp[i].id
+                    cottontypes.add(option);
+                }
+                loadMarket()
+            })
+ 
+        }
+
+        
+
+    </script>
+
+    <script>
+        function loadMarket(){
+    
+            let headers = new Headers({
+                "Accept"       : "application/json",
+                "Content-Type" : "application/json",
+                "Origin": "http://localhost:8000",
+                // "User-Agent"   : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.116 Safari/537.36"
+            });
+
+
+            fetch("http://localhost:8000/getmarket/",{
+                method: 'GET',
+                headers : headers,
+            })
+            .then(function(response) {
+                console.log(response)
+                return response.json()
+            })
+            .then((resp)=> {
+                market = document.getElementById("market")
+                for(var i=0;i<resp.length;i++){
+                    var option = document.createElement('option');
+                    option.text = resp[i].name + " - " + resp[i].district + " - " + resp[i].state;
+                    option.value = resp[i].id
+                    market.add(option);
+                }
+            })
+        }
+    </script>
+<!-- </div> -->
+{% endblock %}

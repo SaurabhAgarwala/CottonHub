@@ -17,3 +17,84 @@ class UserCreateSerializer(UserCreateSerializer):
             "last_name",
             "password",
         )
+
+
+class CottonTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CottonType
+        fields = "__all__"
+
+
+class MarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Market
+        fields = "__all__"
+
+
+class ProductSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(read_only=True)
+    cotton_type = CottonTypeSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, allow_null=True, source="user", queryset=User.objects.all(),
+    )
+
+    class Meta:
+        model = models.Product
+        fields = "__all__"
+
+
+class OrderSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, allow_null=True, source="user", queryset=User.objects.all(),
+    )
+
+    class Meta:
+        model = models.Order
+        fields = "__all__"
+
+
+class InventorySerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        write_only=True,
+        allow_null=True,
+        source="product",
+        queryset=Product.objects.all(),
+    )
+
+    class Meta:
+        model = models.Inventory
+        fields = "__all__"
+
+
+class OrderItemSerializer(serializers.ModelSerializer):
+
+    order = OrderSerializer(read_only=True)
+    inventory = InventorySerializer(read_only=True)
+    order_id = serializers.PrimaryKeyRelatedField(
+        write_only=True, allow_null=True, source="order", queryset=Order.objects.all(),
+    )
+    inventory_id = serializers.PrimaryKeyRelatedField(
+        write_only=True,
+        allow_null=True,
+        source="inventory",
+        queryset=Inventory.objects.all(),
+    )
+
+    class Meta:
+        model = models.OrderItem
+        fields = "__all__"
+
+
+class AnalysisSerializer(serializers.ModelSerializer):
+
+    cotton_type = CottonTypeSerializer(read_only=True)
+    market = MarketSerializer(read_only=True)
+
+    class Meta:
+        model = models.Analysis
+        fields = "__all__"
+
