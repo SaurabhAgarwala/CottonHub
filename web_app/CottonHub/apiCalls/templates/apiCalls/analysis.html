@@ -2,9 +2,14 @@
 {% load static %}
 {% block content %}
 
-<div class="container">
-
-    <form id = "analysisform">
+<div class="container" style="padding-top: 20px;">
+  <div class="about-model">
+    <h4 >About the Pricing Model</h2>
+    <p>Forecasting of the cotton prices is highly dependent on the trends that exist in cotton prices. These trends have been captured using several Machine Learning and Statistical models. Each forecast is associated with a given market and a given variety. Currently, around 100 such forecasts have been made for different varieties of cotton and for different markets all over India. The forecasts are done on a daily, weekly and monthly (30-day period) basis. Individual forecasts are first computed using different models and these are finally merged into a single forecast. The merging is such that models with a lower validation error are weighted more.
+      <br>
+      The average Mean Absolute Error (MAE) for our daily forecasts is about Rs. 121 per quintal; which means our daily forecasts tend to deviate from the true prices by only around Rs. 121. The average Mean Absolute Percentage Error (MAPE) for daily forecasts is around 2.83%.</p>
+  </div>
+    <form id = "analysisform" style="padding-bottom: 100px;">
       <div class="wrap-input">
         <select name = "market" class="form-control" id="market">
             <option disabled selected value>Select Cotton Variety</option>
@@ -19,23 +24,21 @@
       <div class="btn-center">
         <button type = "submit" class="login-form-btn">
           Show Analysis
-      </button>
-      
-      </div>
-     
+      </button>      
+      </div>    
     </form>
   
     <div id = "chartViewer" style="display: none;padding-bottom: 100px;">
       <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
           <div class="carousel-item active">
-            <div id="daily_forecast_chart" class="w-100 d-block" style="height: 400px;"></div>
+            <div id="daily_forecast_chart"  style="height: 400px;"></div>
           </div>
-          <div class="carousel-item">
-            <div id="weekly_forecast_chart" class="w-100 d-block" style="height: 400px;"></div>
+          <div class="carousel-item" style="text-align: center;">
+            <div id="weekly_forecast_chart" style="height: 400px;"></div>          
           </div>
-          <div class="carousel-item">
-            <div id="monthly_forecast_chart" class="w-100 d-block" style="height: 400px;"></div> 
+          <div class="carousel-item" >
+             <div id="monthly_forecast_chart" style="height: 400px;;"></div> 
           </div>
           <div class="carousel-item">
             <div id="barChart" style="height: 400px; width: 100%;"></div>

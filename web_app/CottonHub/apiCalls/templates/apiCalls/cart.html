@@ -260,9 +260,9 @@
                                         +'<a class = "remove" href ='+ url_placeorder +'><Button class="btn">Buy product</Button></a></div></header>'
                                         
                                         +'<div class="content">'
-            
-                                            +'<h1>'+response[i].inventory.product.cotton_type.name +'</h1>'
-                                            + response[i].inventory.product.cotton_type.description
+                                            +'<h5>Cotton type: '+ response[i].inventory.product.cotton_type.name +'</h5>'
+                                            +'<p>Description: ' +response[i].inventory.product.cotton_type.description+'</p>'
+                                            +'<h5>Seller: '+ response[i].inventory.product.user.first_name +'</h5>'
                                         +'</div>'
                                         +'<footer class="content">'
                                             +'<span class="qt-minus">Quantity -</span>'

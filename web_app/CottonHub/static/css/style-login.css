@@ -210,6 +210,21 @@ body{
 .btn-center{
   text-align: center;
 }
+
+
+.about-model{
+  text-align: justify;
+  background-color: azure;
+  padding: 20px;
+  font-weight: 500;
+}
+
+.about-model h4{
+  text-align: center;
+}
+
+
+
 /*table*/
 .table-inventory {
     border-collapse: collapse;
@@ -227,3 +242,16 @@ body{
 
 .table-inventory th{background-color: #B7CE63;
     font-family: 'Rock Salt', cursive; }
+
+    .home-info{
+      background-color: azure;
+      text-align: justify;
+      margin: 30px;
+      padding: 20px;
+      font-weight: 500;
+    }
+    
+    .home-info h4{
+      text-align: center;
+      font-weight: bold;
+    }

@@ -1,4 +1,4 @@
-{% extends 'apiCalls/base.html' %}
+{% extends 'apiCalls/base_after_login.html' %}
 {% load static %}
 {% block content %}
 
@@ -23,7 +23,16 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="sr-only">Next</span>
     </a>
+    <div class="home-info">
+      <h4>About CottonHub</h4>
+      <p>
+        CottonHub is an e-commerce portal that streamlines and simplifies the purchasing as well as sales of cotton.  It provides a platform for cotton farmers to upload their information and selling price so that customers can easily find suitable cotton in a market near them.
 
+In addition to its e-commerce facilities, CottonHub features an artificial Intelligence based solution which calculates the future market trend of cotton sales on the basis of past years data and predicts the price of cotton on a market and variety basis. Farmers may use this as a guideline to price their cotton. 
+
+Cotton is a commodity, which is perhaps the most volatile among all the agricultural commodities traded. Due to high voiatility in cotton prices, it is very difficult for farmers to manually guess the future market trend and accordingly strategize their sales so as to compete in the market and increase the volume of the corporation for sustainable growth. Thus, our artificial Intelligence based solution is a critical tool for farmers to bolster their income!
+      </p>
+    </div>
     <div id="barChart" style="height: 400px; width: 100%;"></div>
   </div>
 
@@ -117,7 +126,9 @@
   function showBarChart(dataPoints) {
 	var chart = new CanvasJS.Chart("barChart", {
 		title:{
-			text: "Average Price Over The Forecast of Next 7 days"             
+
+			text: "Average Price of Cotton in India over next 7 days"             
+
 		},
     axisX:{
 		  interval: 1

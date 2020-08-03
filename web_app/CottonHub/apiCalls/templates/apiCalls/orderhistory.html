@@ -213,8 +213,9 @@ a:hover {
                 orderHistory.innerHTML += '<section id="cart">'
                                 +'<article class="product">'
                                     +'<div class="content">'
-                                        +'<h1>'+response[i].inventory.product.cotton_type.name +'</h1>'
-                                        + response[i].inventory.product.cotton_type.description
+                                        +'<h1>Cotton type: '+response[i].inventory.product.cotton_type.name +'</h1>'
+                                        + '<p>Description: '+ response[i].inventory.product.cotton_type.description+'</p>'
+                                        +'<h5>Seller: '+ response[i].inventory.product.user.first_name +'</h5>'
                                     +'</div>'
                                     +'<footer class="content">'
                                         +'<span class="qt-minus">Quantity -</span>'
