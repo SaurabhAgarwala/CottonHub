@@ -88,3 +88,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = models.OrderItem
         fields = "__all__"
 
+
+class AnalysisSerializer(serializers.ModelSerializer):
+
+    cotton_type = CottonTypeSerializer(read_only=True)
+    market = MarketSerializer(read_only=True)
+
+    class Meta:
+        model = models.Analysis
+        fields = "__all__"
+

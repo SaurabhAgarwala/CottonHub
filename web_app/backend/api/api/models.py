@@ -96,3 +96,28 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return self.order.name + "  " + self.inventory.product.cotton_type.name
+
+
+class Analysis(models.Model):
+    cotton_type = models.ForeignKey(CottonType, blank=False, on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, blank=False, on_delete=models.CASCADE)
+    period = models.CharField(max_length=8, choices=PERIOD, blank=False)
+    date = models.DateField(blank=False)
+    prediction = models.DecimalField(max_digits=10, decimal_places=2, blank=False)
+    confidence_lower = models.DecimalField(max_digits=10, decimal_places=2, blank=False)
+    confidence_upper = models.DecimalField(max_digits=10, decimal_places=2, blank=False)
+    temperature = models.CharField(max_length=5, blank=True, null=True)
+    rainfall = models.CharField(max_length=5, blank=True, null=True)
+    economy_indicator = models.BooleanField(blank=True, null=True)
+
+    def __str__(self):
+        return (
+            self.cotton_type.name
+            + " "
+            + self.market.name
+            + " "
+            + self.period
+            + " "
+            + str(self.date)
+        )
+

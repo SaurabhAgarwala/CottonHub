@@ -106,6 +106,7 @@ feature_selection <- function(data, k = 100, day_num = 1)
     #}
     
     train_data <- data[, !(colnames(data) %in% non_feat_cols)]
+    #orig_cols <- colnames(train_data)
     train_data <- as.matrix(train_data)
     
     #dist_col <- dist(t(train_data))
@@ -145,16 +146,16 @@ feature_selection <- function(data, k = 100, day_num = 1)
     # Singular Value Decomposition
     ############################################################
     
-    sel_cols <- colnames(train_data)
-    sel_data <- train_data[, sel_cols]
-    s <- svd(sel_data)
+    #sel_cols <- colnames(train_data)
+    #sel_data <- train_data[, sel_cols]
+    #s <- svd(sel_data)
     
     #par(mfrow = c(1, 1), xaxt = 's')
     #plot(x = 1:length(s$d), y = cumsum((s$d ^ 2) / sum(s$d ^ 2) * 100), main = "SVD Information Retention", ylab = 'Percentege Retention (%)', xlab = 'No. of Feature')
     #dev.off()
     
-    new_data <- s$u[, 1:k] %*% diag(s$d[1:k])
-    new_data <- as.data.frame(new_data)
+    #new_data <- s$u[, 1:k] %*% diag(s$d[1:k])
+    #new_data <- as.data.frame(new_data)
     ############################################################
     
     ############################################################
@@ -171,7 +172,7 @@ feature_selection <- function(data, k = 100, day_num = 1)
     # Using all features
     ############################################################
     
-    #new_data <- as.data.frame(train_data)
+    new_data <- as.data.frame(train_data)
     ############################################################
 
     ############################################################
@@ -179,6 +180,7 @@ feature_selection <- function(data, k = 100, day_num = 1)
     ############################################################
     
     colnames(new_data) <- sapply(seq(ncol(new_data)), function(i) {paste('feat', i, sep = '_')})
+    #colnames(new_data) <- orig_cols
     data <- subset(data, select = non_feat_cols)
     data <- cbind(data, new_data)
     ############################################################
@@ -187,11 +189,11 @@ feature_selection <- function(data, k = 100, day_num = 1)
     # Final Scaling
     ############################################################
 
-    for (col in colnames(data))
-    {
-        if(!(col %in% non_feat_cols))
-            data[, col] <- scale(data[, col])
-    }
+    #for (col in colnames(data))
+    #{
+    #    if(!(col %in% non_feat_cols))
+    #        data[, col] <- scale(data[, col])
+    #}
     ############################################################
     
     data
