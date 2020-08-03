@@ -160,3 +160,103 @@ class InventoryViewSet(viewsets.ModelViewSet):
             inventory, many=True
         ).data
         return Response(inventory_serializer)
+
+
+# Analysis.objects.filter(
+#                 cotton_type__in=CottonType.objects.filter(name='Cotton'),
+#                 market__in=Market.objects.filter(name='Adilabad'),
+#             )
+
+
+@permission_classes([IsAuthenticated])
+class AnalysisViewSet(viewsets.ModelViewSet):
+    queryset = models.Analysis.objects.all()
+    serializer_class = serializers.AnalysisSerializer
+
+    @list_route(methods=["get"])
+    def specific(self, request, **kwargs):
+        market = request.GET.get("market", "")
+        cottontype = request.GET.get("cottontype", "")
+        if market != "" and cottontype != "":
+            analysis_data = Analysis.objects.filter(
+                cotton_type__in=CottonType.objects.filter(id=cottontype),
+                market__in=Market.objects.filter(id=market),
+            )
+        elif market != "":
+            analysis_data = Analysis.objects.filter(
+                market__in=Market.objects.filter(id=market),
+            )
+        else:
+            analysis_data = Analysis.objects.filter(
+                cotton_type__in=CottonType.objects.filter(id=cottontype),
+            )
+        analysis_data_extracted = serializers.AnalysisSerializer(
+            analysis_data, many=True
+        ).data
+        return Response(analysis_data_extracted)
+
+
+@api_view(["POST"])
+@parser_classes((JSONParser,))
+@permission_classes([IsAuthenticated])
+def addToCart(request):
+
+    data = request.data
+    print(data)
+    user = User.objects.get(id=data["user_uid"])
+    cottontype = CottonType.objects.get(id=data["cotton_type"])
+    inventory = Inventory.objects.get(id=data["inventory_id"])
+    quantity = int(data["quantity"])
+
+    order = Order(
+        user=user,
+        name=data["name"],
+        mobile=data["mobile"],
+        shipping_address=data["shipping_address"],
+    )
+    order.save()
+
+    order_item = OrderItem(order=order, inventory=inventory, quantity=quantity)
+    order_item.save()
+
+    response_data = {"status": True, "order_id": order.id}
+
+    return Response(data=response_data, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+@parser_classes((JSONParser,))
+@permission_classes([IsAuthenticated])
+def sellCottonProduct(request):
+
+    data = request.data
+    print(data)
+    user = User.objects.get(id=data["user_uid"])
+    cottontype = CottonType.objects.get(id=data["cotton_type"])
+    product = Product.objects.create(user=user, cotton_type=cottontype)
+
+    inventory = Inventory(
+        product=product,
+        quantity=int(data["quantity"]),
+        selling_price=int(data["selling_price"]),
+        msp=100,
+    )
+
+    inventory.save()
+
+    response_data = {"status": True}
+
+    return Response(data=response_data)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def placeOrder(request, id):
+    order = Order.objects.get(id=id)
+    orderitem = OrderItem.objects.get(order=order)
+    orderitem.inventory.quantity = orderitem.quantity
+    order.purchased = True
+    order.save()
+
+    response_data = {"status": True}
+    return Response(data=response_data)

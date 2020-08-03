@@ -10,6 +10,8 @@ router.register(r"cottontype", views.CottonTypeViewSet)
 router.register(r"market", views.MarketViewSet)
 router.register(r"product", views.ProductViewSet)
 router.register(r"inventory", views.InventoryViewSet)
+router.register(r"analysis", views.AnalysisViewSet)
+
 
 urlpatterns = [
     url(r"^auth/", include("djoser.urls")),
