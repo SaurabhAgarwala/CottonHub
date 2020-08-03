@@ -54,6 +54,44 @@
         </a>
       </div>
     </div>
+
+    
+    <form id = "heatmap">
+      <div class="wrap-input">
+        <select name = "market" class="form-control" id="state">
+            <option disabled selected value>Select State</option>
+            <option value = "Gujarat">Gujarat</option>
+            <option value = "Karnataka">Karnataka</option>
+            <option value = "Maharastra">Maharastra</option>
+            <option value = "Andhra Pradesh">Andhra Pradesh</option>
+            <option value = "National">National</option>
+          </select>
+      </div>
+
+      <div class="wrap-input">
+        <select name = "cottontypes" class="form-control" id="year">
+            <option disabled selected value>Select Market </option>
+            <option value = "2015">2015</option>
+            <option value = "2016">2016</option>
+            <option value = "2017">2017</option>
+            <option value = "2018">2018</option>
+            <option value = "2019">2019</option>
+            <option value = "2020">2020</option>
+
+          </select>
+      </div>
+      <div class="btn-center">
+        <button type = "submit" class="login-form-btn">
+          Show Analysis
+      </button>
+      
+      </div>
+     
+    </form>
+
+    <div id = "heatmapimage"></div>
+  
+
   </div>
 
   <table class="table-inventory foo-padding" style="padding-bottom: 200px;" id="forecast">
@@ -255,7 +293,7 @@ old_tbody.parentNode.replaceChild(new_tbody, old_tbody)*/
   axisY:{
 		title: "Forecast Price (in Rs)",
 		includeZero: true,
-		valueFormatString: "$#0"
+		valueFormatString: "Rs#0"
 	},
   toolTip: {
 		shared: true
@@ -274,7 +312,7 @@ old_tbody.parentNode.replaceChild(new_tbody, old_tbody)*/
 		name: "Forecast Data",
 		showInLegend: true,
 		markerSize: 0,
-		yValueFormatString: "$#,###k",
+		yValueFormatString: "Rs#,###k",
 			dataPoints: forecast_data
 		},
     {
@@ -282,7 +320,7 @@ old_tbody.parentNode.replaceChild(new_tbody, old_tbody)*/
 		name: "Lower Bound of Confidence Interval",
 		showInLegend: true,
 		markerSize: 0,
-		yValueFormatString: "$#,###k",
+		yValueFormatString: "Rs#,###k",
 			dataPoints: lower_bound
     },
     {
@@ -290,7 +328,7 @@ old_tbody.parentNode.replaceChild(new_tbody, old_tbody)*/
       name: "Upper Bound of Confidence Interval",
 		showInLegend: true,
 		markerSize: 0,
-		yValueFormatString: "$#,###k",
+		yValueFormatString: "Rs#,###k",
 			dataPoints: upper_bound
     }
 		]
@@ -427,6 +465,62 @@ function toogleDataSeries(e){
 	chart.render();
 }
 </script>
+
+<script>
+  document.getElementById("heatmap").onsubmit = function(event){
+    event.preventDefault()
+    
+    console.log("here in forms 2")
+    
+    var state = document.getElementById("state")
+    var year = document.getElementById("year")
+    var selected_state = '';
+    var selected_year = '';
+    if (state.selectedIndex != -1)
+      selected_state = state.options[state.selectedIndex].value;
+    if (year.selectedIndex != -1)
+      selected_year = year.options[year.selectedIndex].value
+    
+
+    var data = {
+      "state": selected_state,
+      "year": selected_year
+    }
+  
+    console.log(data)
+
+    fetch("http://localhost:8000/getheatmap/",{
+      method: "POST",
+      body: JSON.stringify(data)
+    })
+    .then((response)=>{
+      return response.json();
+    })
+    .then((response) => {
+      console.log(response)
+      base64image = response.image
+      console.log(base64image)
+      var baseimage = base64image.replace(/\n/g,"")
+      // console.log("oth element",baseimage[0])
+      // var strimage = ''
+      // for(var i=0;i<baseimage.length;i++){
+      //   strimage+=baseimage[i]
+      // }
+      // console.log(strimage)
+      // var imgData = "data:image/png;base64, "+strimage
+      // console.log(imgData)
+      
+      heatmapimage = document.getElementById("heatmapimage")
+      console.log(heatmapimage)
+      heatmapimage.innerHTML += '<img src='+ baseimage +'/>'
+      console.log(heatmapimage)
+
+    })
+
+  }
+
+</script>
+
 
 
 

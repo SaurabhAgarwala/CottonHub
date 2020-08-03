@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^analysis',views.analysis),
     url(r'^getanalysis',views.getAnalysis),
     url(r'^orderhistory',views.orderHistory),
+    url(r'^getheatmap',views.getHeatMap),
     path('deleteorder/<int:id>', views.deleteOrder),
     path('placeorder/<int:id>', views.placeOrder),
     path('deleteinventory/<int:id>', views.deleteInventory),

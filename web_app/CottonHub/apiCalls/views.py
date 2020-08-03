@@ -651,3 +651,29 @@ def getAnalysis(request):
             "message": "Request method not allowed"
         }
         return JsonResponse(data)
+
+@csrf_exempt
+def getHeatMap(request):
+
+    try:
+        auth_token = request.session["auth_token"]
+        url = base_url+"getheatmap/"
+        content = json.loads(request.body)
+        headers = {
+            "Authorization": "token "+auth_token,
+            "Content-Type": "application/json"
+        }
+        params = {
+            "state": content["state"],
+            "year": content["year"]
+        }
+        resp = requests.get(url,params = params, headers = headers)
+        print(resp.url)
+        print(resp.status_code)
+        response_obj = resp.json()
+        return JsonResponse(response_obj)
+    except:
+        data = {
+            "message": "Invalid Credentials"
+        }
+        return JsonResponse(data)
