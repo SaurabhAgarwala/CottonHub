@@ -1,4 +1,4 @@
-# CottonHUb
+# CottonHub
 Team CodeBreakers novel solution for problem statement AR256 given by the Ministry of Textile in SIH 2020
 
 ## Features
