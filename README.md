@@ -1,5 +1,5 @@
-# AR256_CodeBreakers
-Team CodeBreakers novel solution for SIH 2020
+# CottonHUb
+Team CodeBreakers novel solution for problem statement AR256 given by the Ministry of Textile in SIH 2020
 
 ## Features
 
